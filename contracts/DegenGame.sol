@@ -1,39 +1,3 @@
-# DegenGame
-
-DegenGame is a Solidity program build with a gaming platform in mind. On the platform, players get rewarded for participating in the game. They get tokens, which can be transferred between players and can redeem items in the game store.
-
-# Description
-
-This program is a simple contract written in Solidity, a programming language for developing smart contracts on the Ethereum blockchain. The smart contract inherited the Openzeppelin ERC-20 and Ownable smart contract by importing them as seen below
-
-```javascript
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-```
-
-The contract is a child contract to the OZ ERC-20 and the Ownable smart contract.
-
-The smart contract has 8 functions which are explained below.
-
-- ```playerRegister```: This allows players to register for the game. Only the registered players get rewarded with tokens.
-- ```distributeTokens```: the contract owner use this function to transfer tokens to the registered players as a way to reward them for participating in the game.
-- ```transferToken```: players who want to transfer their tokens to other players can do that using this function.
-- ```balance```: allows only registered users to check their balance.
-- ```redeemItem```: allows players to redeem items in the game store. A player can buy items from the game store with their token.
-- ```lockAccount```: the contract owner can lock the account of a player if they go against the rules of the platform.
-- ```openAccount```: the contract owner can unlock the account of a player whose account has been locked.
-- ```playerBurnsToken```: players can burn their token using this function.
-
-  
-# Getting Started
-
-## Executing program
-
-- To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at https://remix.ethereum.org/.
-
-- Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., DegenGame.sol). Copy and paste the following code into the file:
-
-```javascript
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
@@ -192,20 +156,3 @@ contract DegenGame is ERC20, Ownable {
         itemOwners[address(this)][5] = gameItems[5];
     }
 }
-```
-- To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.24" (or another compatible version), and then click on the "Compile DegenGame.sol" button.
- 
-- Change the Environment from the "Remix VM" to Injected Provider - Metamask to be able to deploy to Avalanche chain. On your metamask, make sure the selected network is Avalanche Fuji.
- 
-- Once you have sorted your environment, you can deploy the contract by clicking the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the "DegenGame" contract from the dropdown menu, and then click on the "Deploy" button.
- 
-- Once the contract is deployed, you can interact with it the contract.
-
-
-# Authors
-
-Samuel Shola
-
-# License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details
