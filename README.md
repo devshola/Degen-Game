@@ -1,6 +1,6 @@
 # DegenGame
 
-DegenGame is a Solidity program build with a gaming platform in mind. On the platform, players get rewarded for participating in the game. They get tokens, which can be transferred between players and can redeem items in the game store.
+DegenGame is a Solidity program built with a gaming platform in mind. On the platform, players get rewarded for participating in the game. They get tokens, which can be transferred between players and can redeem items in the game store.
 
 # Description
 
@@ -20,8 +20,6 @@ The smart contract has 8 functions which are explained below.
 - ```transferToken```: players who want to transfer their tokens to other players can do that using this function.
 - ```balance```: allows only registered users to check their balance.
 - ```redeemItem```: allows players to redeem items in the game store. A player can buy items from the game store with their token.
-- ```lockAccount```: the contract owner can lock the account of a player if they go against the rules of the platform.
-- ```openAccount```: the contract owner can unlock the account of a player whose account has been locked.
 - ```playerBurnsToken```: players can burn their token using this function.
 
   
@@ -43,7 +41,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 error ADDRESS_ZERO_NOT_ALLOWED();
 error YOU_ARE_NOT_REGISTERED();
 error ALREADY_REGISTERED();
-error OWNER_CANNOT_REGISTER();
+error OWNER_CANNOT_REGISTER(address);
 error RECIPIENT_NOT_A_PLAYER();
 error TRANSFER_FAILED();
 error PLAYER_DOES_NOT_EXIST();
@@ -78,7 +76,6 @@ contract DegenGame is ERC20, Ownable {
 
     constructor() ERC20("Degen", "DGN") Ownable(msg.sender) {
         addItems();
-        _mint(address(this), 1000000);
     }
 
      modifier isRegistered() {
@@ -95,7 +92,7 @@ contract DegenGame is ERC20, Ownable {
     function playerRegister(string memory _username) external addressZero {
         if (players[msg.sender].player != address(0))
             revert ALREADY_REGISTERED();
-        if (msg.sender == owner()) revert OWNER_CANNOT_REGISTER();
+        if (msg.sender == owner()) revert OWNER_CANNOT_REGISTER(msg.sender);
 
         Player memory _player = Player(msg.sender, _username, true);
 
@@ -109,7 +106,7 @@ contract DegenGame is ERC20, Ownable {
         Player[] memory _players = allPlayers;
 
         for (uint256 i = 0; i < _players.length; i++) {
-            _transfer(address(this), _players[i].player, 1000);
+            _mint(_players[i].player, 1000);
         }
     }
 
@@ -128,23 +125,6 @@ contract DegenGame is ERC20, Ownable {
 
     function balance() external view isRegistered returns (uint256) {
         return balanceOf(msg.sender);
-    }
-
-    function lockAccount(address player) external onlyOwner {
-        Player storage _player = players[player];
-
-        if (_player.player == address(0) || !_player.isRegistered)
-            revert PLAYER_DOES_NOT_EXIST();
-
-        _player.isRegistered = false;
-    }
-
-    function openAccount(address player) external onlyOwner {
-        Player storage _player = players[player];
-        if (_player.player == address(0)) revert PLAYER_DOES_NOT_EXIST();
-        if (_player.isRegistered) revert PLAYER_NOT_SUSPENDED();
-
-        _player.isRegistered = true;
     }
 
     function playerBurnsToken(uint256 _amount)
@@ -193,11 +173,11 @@ contract DegenGame is ERC20, Ownable {
     }
 }
 ```
-- To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.24" (or another compatible version), and then click on the "Compile DegenGame.sol" button.
+- To compile the code, click the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.24" (or another compatible version), and then click on the "Compile DegenGame.sol" button.
  
-- Change the Environment from the "Remix VM" to Injected Provider - Metamask to be able to deploy to Avalanche chain. On your metamask, make sure the selected network is Avalanche Fuji.
+- Change the Environment from the "Remix VM" to Injected Provider - Metamask to deploy to Avalanche chain. On your metamask, make sure the selected network is Avalanche Fuji.
  
-- Once you have sorted your environment, you can deploy the contract by clicking the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the "DegenGame" contract from the dropdown menu, and then click on the "Deploy" button.
+- Once you have sorted your environment, you can deploy the contract by clicking the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the "DegenGame" contract from the dropdown menu, then click the "Deploy" button.
  
 - Once the contract is deployed, you can interact with it the contract.
 
