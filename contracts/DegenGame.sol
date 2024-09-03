@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 error ADDRESS_ZERO_NOT_ALLOWED();
 error YOU_ARE_NOT_REGISTERED();
 error ALREADY_REGISTERED();
-error OWNER_CANNOT_REGISTER();
+error OWNER_CANNOT_REGISTER(address);
 error RECIPIENT_NOT_A_PLAYER();
 error TRANSFER_FAILED();
 error PLAYER_DOES_NOT_EXIST();
@@ -42,7 +42,6 @@ contract DegenGame is ERC20, Ownable {
 
     constructor() ERC20("Degen", "DGN") Ownable(msg.sender) {
         addItems();
-        _mint(address(this), 1000000);
     }
 
      modifier isRegistered() {
@@ -59,7 +58,7 @@ contract DegenGame is ERC20, Ownable {
     function playerRegister(string memory _username) external addressZero {
         if (players[msg.sender].player != address(0))
             revert ALREADY_REGISTERED();
-        if (msg.sender == owner()) revert OWNER_CANNOT_REGISTER();
+        if (msg.sender == owner()) revert OWNER_CANNOT_REGISTER(msg.sender);
 
         Player memory _player = Player(msg.sender, _username, true);
 
@@ -73,7 +72,7 @@ contract DegenGame is ERC20, Ownable {
         Player[] memory _players = allPlayers;
 
         for (uint256 i = 0; i < _players.length; i++) {
-            _transfer(address(this), _players[i].player, 1000);
+            _mint(_players[i].player, 1000);
         }
     }
 
@@ -92,23 +91,6 @@ contract DegenGame is ERC20, Ownable {
 
     function balance() external view isRegistered returns (uint256) {
         return balanceOf(msg.sender);
-    }
-
-    function lockAccount(address player) external onlyOwner {
-        Player storage _player = players[player];
-
-        if (_player.player == address(0) || !_player.isRegistered)
-            revert PLAYER_DOES_NOT_EXIST();
-
-        _player.isRegistered = false;
-    }
-
-    function openAccount(address player) external onlyOwner {
-        Player storage _player = players[player];
-        if (_player.player == address(0)) revert PLAYER_DOES_NOT_EXIST();
-        if (_player.isRegistered) revert PLAYER_NOT_SUSPENDED();
-
-        _player.isRegistered = true;
     }
 
     function playerBurnsToken(uint256 _amount)
